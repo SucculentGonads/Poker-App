@@ -39,7 +39,7 @@ class PokerGame:
             self.ui_log.append("⏳ Waiting for at least 2 players to start dealing.")
         #self._deal_flop()
 
-        #this shit should take care of players that leave and get them off the table
+        #this should take care of players that leave and get them off the table
     def mark_active(self, player):
         from django.utils.timezone import now as timezone_now
         self.last_active[player] = timezone_now()
@@ -92,7 +92,7 @@ class PokerGame:
 
         for p in players_to_remove:
            self.seat_assignments.pop(p, None)
-        #this shit should take care of players that leave and get them off the table
+        #this should take care of players that leave and get them off the table
 
 
     def _generate_shuffled_deck(self):

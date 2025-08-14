@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Room - Front Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1b1b1b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden; /* Prevents scrolling to the right */
+            padding-bottom: 500px;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            width: 100%;
+            height: 60px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        /* Full-Width Section with Fixed Height */
+        .main-container {
+            width: 100%;
+            height: 550px;
+            background: #1b1b1b url('Background-Waves.png') no-repeat center center;
+            background-size: cover;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden; /* Ensures images do not go past this section */
+        }
+
+        .confetti-left,
+        .confetti-right {
+            position: absolute;
+            top: 0;
+            width: 25%;
+            height: auto;
+            z-index: 15;
+        }
+
+        .confetti-left {
+            left: 0;
+        }
+
+        .confetti-right {
+            right: 0;
+        }
+
+        .top-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 75%;
+            z-index: 10;
+            margin-top: -19px;
+        }
+
+        .top-image {
+            width: 90%;
+            height: auto;
+        }
+
+        .text-image {
+            width: 45%;
+            max-width: 450px;
+            position: relative;
+            top: -20px;
+        }
+
+        /* Updated Button Styles (TOP Buttons) */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: auto; /* Prevents it from stretching too wide */
+            max-width: 600px; /* Keeps buttons from spreading too far */
+            margin-top: 20px;
+            gap: 200px; /* Adjust spacing between buttons */
+        }
+
+        .button-container img {
+            width: 41%;
+            max-width: 350px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        /* Hover effect only on TOP buttons */
+        .button-container img:hover {
+            transform: translateY(-5px);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(255, 223, 186, 0.5);
+        }
+
+        /* Image Section */
+        .image-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 200px; /* Increased space between images */
+            margin-top: 60px; /* Lowered images */
+        }
+
+        .image-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 500px;
+            height: auto;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .image-container:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+
+        }
+
+        /* Buttons Below Images (BOTTOM Buttons - No Hover Effect) */
+        .image-button-container {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .image-button-container img {
+            width: 80%; /* Increased button size */
+            max-width: 250px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: none; /* Remove hover animation */
+            display: block; /* Ensures button is centered */
+        }
+
+        .image-button-container img:hover {
+            transform: none; /* Prevent movement */
+            box-shadow: none; /* No glow effect */
+            border-radius: 20px;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .confetti-left,
+            .confetti-right {
+                width: 20%;
+            }
+            .top-container {
+                width: 90%;
+            }
+            .text-image {
+                width: 50%;
+                top: -15px;
+            }
+            .button-container {
+                width: 90%;
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            .button-container img {
+                width: 75%;
+                max-width: 320px;
+            }
+            .image-section {
+                flex-direction: column;
+                gap: 30px;
+            }
+            .image-container img {
+                width: 300px;
+            }
+            .image-button-container img {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <!-- Navigation items will be added later -->
+    </div>
+
+    <!-- Full-Width Section -->
+    <div class="main-container">
+        <img src="Confetti-Left.png" alt="Left Confetti" class="confetti-left">
+        
+        <div class="top-container">
+            <img src="Top-Image.png" alt="Poker Casino Banner" class="top-image">
+            <img src="Text.png" alt="Texas Hold 'Em" class="text-image">
+            
+            <!-- Buttons BELOW the text (TOP Buttons) -->
+            <div class="button-container">
+                <img src="Create-Room.png" alt="Create a Room" class="create-room">
+                <img src="Find-Room.png" alt="Find a Room" class="find-room">
+            </div>
+        </div>
+
+        <img src="Confetti-Right.png" alt="Right Confetti" class="confetti-right">
+    </div>
+
+    <!-- Image Section Below -->
+    <div class="image-section">
+        <!-- Left Image -->
+        <div class="image-container">
+            <img src="Create-Img.png" alt="Create Room Image">
+            <div class="image-button-container">
+                <img src="Create-Room.png" alt="Create a Room Button">
+            </div>
+        </div>
+
+        <!-- Right Image -->
+        <div class="image-container">
+            <img src="Find-Img.png" alt="Find Room Image">
+            <div class="image-button-container">
+                <img src="Find-Room.png" alt="Find a Room Button">
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

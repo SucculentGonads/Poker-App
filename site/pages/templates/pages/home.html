@@ -1,0 +1,282 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Room - Front Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1b1b1b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            padding-bottom: 500px;
+        }
+
+        .navbar {
+            width: 100%;
+            height: 60px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .main-container {
+            width: 100%;
+            height: 550px;
+            background: #1b1b1b url("{% static 'pages/front_page/Background-Waves.png' %}") no-repeat center center;
+            background-size: cover;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confetti-left,
+        .confetti-right {
+            position: absolute;
+            top: 0;
+            width: 25%;
+            height: auto;
+            z-index: 15;
+        }
+
+        .confetti-left {
+            left: 0;
+        }
+
+        .confetti-right {
+            right: 0;
+            top:0;
+
+        }
+
+        .top-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 75%;
+            z-index: 10;
+            margin-top: -19px;
+        }
+
+        .top-image {
+            width: 90%;
+            height: auto;
+        }
+
+        .text-image {
+            width: 45%;
+            max-width: 450px;
+            position: relative;
+            top: -20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: auto;
+            max-width: 800px;
+            margin-top: 20px;
+            gap: 200px;
+        }
+
+        .button-container img {
+            width: 41%;
+            max-width: 350px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .button-container img:hover {
+            transform: translateY(-5px);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(255, 223, 186, 0.5);
+        }
+
+        .image-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 200px;
+            margin-top: 60px;
+        }
+
+        .image-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 500px;
+            height: auto;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .image-container:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .image-button-container {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .image-button-container img {
+            width: 80%;
+            max-width: 250px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: none;
+            display: block;
+        }
+
+        .image-button-container img:hover {
+            transform: none;
+            box-shadow: none;
+            border-radius: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .confetti-left,
+            .confetti-right {
+                width: 20%;
+            }
+            .top-container {
+                width: 90%;
+            }
+            .text-image {
+                width: 50%;
+                top: -15px;
+            }
+            .button-container {
+                width: 90%;
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            .button-container img {
+                width: 75%;
+                max-width: 320px;
+            }
+            .image-section {
+                flex-direction: column;
+                gap: 30px;
+            }
+            .image-container img {
+                width: 300px;
+            }
+            .image-button-container img {
+                width: 90%;
+            }
+        }
+
+        .auth-links {
+          position: absolute;
+          top: 20px;
+          right: 30px;
+          font-family: Arial, sans-serif;
+          font-size: 18px;
+          font-weight: bold;
+          color: white;
+          z-index: 1000;
+        }
+
+        .auth-links a {
+          color: white;
+          text-decoration: none;
+          margin: 0 5px;
+        }
+
+        .auth-links a:hover {
+          text-decoration: underline;
+        }
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <!-- Navigation items will be added later -->
+    </div>
+
+    <div class="main-container">
+        <img src="{% static 'pages/front_page/Confetti-Left.png' %}" alt="Left Confetti" class="confetti-left">
+        <img src="{% static 'pages/front_page/Confetti-Right.png' %}" alt="Right Confetti" class="confetti-right">
+        <div class="top-container">
+            <img src="{% static 'pages/front_page/Top-Image.png' %}" alt="Poker Casino Banner" class="top-image">
+            <img src="{% static 'pages/front_page/Text.png' %}" alt="Texas Hold 'Em" class="text-image">
+
+            <div class="button-container">
+                
+                <div style="width: 45%; max-width: 400px;">
+                    <a href="{% url 'room' %}" style="display: block;">
+                        <img src="{% static 'pages/front_page/Create-Room.png' %}" alt="Create a Room" class="create-room" style="width: 100%;">
+                    </a>
+                </div>
+                <div style="width: 45%; max-width: 400px;">
+                    <a href="#" style="display: block;">
+                        <img src="{% static 'pages/front_page/Find-Room.png' %}" alt="Find a Room" class="find-room" style="width: 100%;">
+                    </a>
+                </div>
+                            </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="image-section">
+        <div class="image-container">
+            <img src="{% static 'pages/front_page/Create-Img.png' %}" alt="Create Room Image">
+            <div class="image-button-container">
+                <img src="{% static 'pages/front_page/Create-Room.png' %}" alt="Create a Room Button">
+            </div>
+        </div>
+
+        <div class="image-container">
+            <img src="{% static 'pages/front_page/Find-Img.png' %}" alt="Find Room Image">
+            <div class="image-button-container">
+                <img src="{% static 'pages/front_page/Find-Room.png' %}" alt="Find a Room Button">
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-links">
+          {% if user.is_authenticated %}
+            Welcome, {{ user.username }} |
+            <a href="{% url 'logout' %}">Logout</a>
+          {% else %}
+            <a href="{% url 'login' %}">Login</a> /
+            <a href="{% url 'register' %}">Register</a>
+          {% endif %}
+        </div>
+
+
+</body>
+</html>

@@ -1,0 +1,650 @@
+<!-- room.html -->
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-image: url("{% static 'pages/poker_room/background.png' %}");
+            background-size: cover;
+            background-repeat: repeat;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .back_button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background-image: url("{% static 'pages/poker_room/back_button.png' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 9999;
+            cursor: pointer;
+            transition: filter 0.2s ease;
+        }
+
+        .back_button:hover {
+            filter: brightness(1.2);
+        }
+
+        .poker_wrapper {
+            width: 1400px;
+            height: 700px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transform-origin: center center;
+            background: transparent;
+        }
+
+        .player-card {
+            position: absolute;
+        }
+
+        .card1 {
+          top: 500px;
+          left: 640px;
+          transform: rotate(-5deg);
+          z-index: 3;
+
+        }
+
+
+        .card2 {
+            top: 500px;
+            left: 690px;
+            transform: rotate(5deg);
+            z-index: 4;
+        }
+
+        .poker_table {
+            position: absolute;
+            top: 100px;
+            left: 300px;
+            width: 800px;
+            height: auto;
+            z-index: 2;
+        }
+
+        .dealer {
+            position: absolute;
+            top: 0px;
+            left: 627px;
+            width: 150px;
+            height: auto;
+            z-index: 1;
+        }
+
+        .spot {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background-image: url("{% static 'pages/poker_room/empty.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        z-index: 4;
+
+    }
+
+        .spot1 { top: 600px; left: 675px;  } 
+        .spot2 { top: 600px; left: 490px;  } 
+        .spot3 { top: 455px; left: 265px;  } 
+        .spot4 { top: 205px; left: 265px;  }
+        .spot5 { top: 50px;  left: 490px; }
+        .spot6 { top: 50px;  left: 865px; }
+        .spot7 { top: 205px; left: 1090px;  } 
+        .spot8 { top: 455px; left: 1079px;  } 
+        .spot9 { top: 600px; left: 865px  } 
+
+
+
+        .action_buttons {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 15px;
+            z-index: 9999;
+        }
+
+        .action_buttons img {
+            width: 170px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .action_buttons img:hover {
+            transform: scale(1.05);
+        }
+
+        .card {
+          width: 80px;
+          height: auto;
+          margin: 5px;
+          border-radius: 0px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .gold-outline {
+          box-shadow: 0 0 15px 5px gold;
+          border-radius: 12px;
+      }
+
+    </style>
+</head>
+<body>
+
+<div class="back_button" onclick="goBack()"></div>
+
+<div class="poker_wrapper" id="poker_wrapper">
+    <img src="{% static 'pages/poker_room/Poker_Table.png' %}" alt="Poker Table" class="poker_table">
+    <img src="{% static 'pages/poker_room/dealer.png' %}" alt="Dealer" class="dealer">
+
+      <!-- player hand -->
+        <div id="your-hand-wrapper">
+          {% for card in player_hand %}
+            <div class="player-card card{{ forloop.counter }}">
+              <img
+                id="card{{ forloop.counter }}"
+                src="{% static 'pages/poker_room/static/Cards/' %}{{ card }}.png"
+                alt="{{ card }}"
+                class="card"
+              >
+            </div>
+          {% endfor %}
+        </div>
+
+
+      <!-- community cards -->
+      <h2>Community Cards</h2>
+    <div class="community-cards">
+      {% for card in community_cards %}
+        <img
+          id="comm{{ forloop.counter }}"
+          src="{% static 'pages/poker_room/static/Cards/' %}{{ card }}.png"
+          style="width:100px;"
+        >
+      {% endfor %}
+    </div>
+
+    <div class="spot spot1">
+        <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if request.user.username == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+        <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+            {{ request.user.username }} (You)<br>
+            {{ coin_map|get_item:request.user.username }} chips
+        </div>
+    </div>
+
+<!-- Spot 7 -->
+    <div class="spot spot7">
+        {% if seat_map.7 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.7 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.7 == request.user.username %}
+                    {{ seat_map.7 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.7 }} chips
+                {% else %}
+                    {{ seat_map.7 }}<br>
+                    {{ coin_map|get_item:seat_map.7 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 2 -->
+    <div class="spot spot2">
+        {% if seat_map.2 %}
+
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.2 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+            <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.2 == request.user.username %}
+                    {{ seat_map.2 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.2 }} chips
+                {% else %}
+                    {{ seat_map.2 }}<br>
+                    {{ coin_map|get_item:seat_map.2 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 3 -->
+    <div class="spot spot3">
+        {% if seat_map.3 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.3 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+            <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.3 == request.user.username %}
+                    {{ seat_map.3 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.3 }} chips
+                {% else %}
+                    {{ seat_map.3 }}<br>
+                    {{ coin_map|get_item:seat_map.3 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 4 -->
+    <div class="spot spot4">
+        {% if seat_map.4 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.4 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+             <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 60px;">
+                {% if seat_map.4 == request.user.username %}
+                    {{ seat_map.4 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.4 }} chips
+                {% else %}
+                    {{ seat_map.4 }}<br>
+                    {{ coin_map|get_item:seat_map.4 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 5 -->
+    <div class="spot spot5">
+        {% if seat_map.5 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.5 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+             <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.5 == request.user.username %}
+                    {{ seat_map.5 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.5 }} chips
+                {% else %}
+                    {{ seat_map.5 }}<br>
+                    {{ coin_map|get_item:seat_map.5 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 6 -->
+    <div class="spot spot6">
+        {% if seat_map.6 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.6 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+             <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.6 == request.user.username %}
+                    {{ seat_map.6 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.6 }} chips
+                {% else %}
+                    {{ seat_map.6 }}<br>
+                    {{ coin_map|get_item:seat_map.6 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 8 -->
+    <div class="spot spot8">
+        {% if seat_map.8 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.8 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+             <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.8 == request.user.username %}
+                    {{ seat_map.8 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.8 }} chips
+                {% else %}
+                    {{ seat_map.8 }}<br>
+                    {{ coin_map|get_item:seat_map.8 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Spot 9 -->
+    <div class="spot spot9">
+        {% if seat_map.9 %}
+            <img src="{% static 'pages/poker_room/plus.png' %}"
+             class="{% if seat_map.9 == current_turn_player %}gold-outline{% endif %}"
+             style="width: 100%; height: 100%;">
+
+             <img src="{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}" 
+              style="position: absolute; top: -30px; left: 10px; width: 40px; z-index: 5;">
+
+
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-top: 0px;">
+                {% if seat_map.9 == request.user.username %}
+                    {{ seat_map.9 }} (You)<br>
+                    {{ coin_map|get_item:seat_map.9 }} chips
+                {% else %}
+                    {{ seat_map.9 }}<br>
+                    {{ coin_map|get_item:seat_map.9 }} chips
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+
+
+
+</div>
+
+<div id="ui-log-container" style="position: fixed; left: 20px; bottom: 40px; width: 400px; height: 300px; overflow-y: auto; background-color: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 8px; font-size: 14px;">
+    <strong>Game Log:</strong>
+    <div id="ui-log-content"></div>
+</div>
+
+
+<div class="action_buttons">
+    <img src="{% static 'pages/poker_room/Check_Button.png' %}" 
+         {% if request.user.username != current_turn_player %}
+            style="opacity:0.5; cursor:not-allowed;"
+            onclick="return false;"
+         {% else %}
+            onclick="sendAction('check')"
+         {% endif %} />
+
+    <img src="{% static 'pages/poker_room/Call_Button.png' %}" 
+         {% if request.user.username != current_turn_player %}
+            style="opacity:0.5; cursor:not-allowed;"
+            onclick="return false;"
+         {% else %}
+            onclick="sendAction('call')"
+         {% endif %} />
+
+    <img src="{% static 'pages/poker_room/Raise_Button.png' %}" 
+         {% if request.user.username != current_turn_player %}
+            style="opacity:0.5; cursor:not-allowed;"
+            onclick="return false;"
+         {% else %}
+            onclick="sendAction('raise')"
+         {% endif %} />
+
+    <img src="{% static 'pages/poker_room/Fold_Button.png' %}" 
+         {% if request.user.username != current_turn_player %}
+            style="opacity:0.5; cursor:not-allowed;"
+            onclick="return false;"
+         {% else %}
+            onclick="sendAction('fold')"
+         {% endif %} />
+</div>
+
+<!-- Player's hand -->
+<div id="player-hand">
+  {% for card in player_hand %}
+    <img src="{% static 'Cards/' %}{{ card }}.png" class="card">
+  {% endfor %}
+</div>
+
+
+<!-- Flop cards -->
+<div id="flop-cards">
+  <img src="{% static 'Cards/Back_of_Card.png' %}" class="card" id="flop-card-1">
+  <img src="{% static 'Cards/Back_of_Card.png' %}" class="card" id="flop-card-2">
+  <img src="{% static 'Cards/Back_of_Card.png' %}" class="card" id="flop-card-3">
+</div>
+
+<!--- Error messeges -->
+<div id="game-log" style="color: white; margin-top: 20px; text-align: center;"></div>
+
+<!--- Button Clicks --->
+
+<script>
+    function scalePokerWrapper() {
+        const wrapper = document.getElementById('poker_wrapper');
+        const wrapperWidth = 1400;
+        const wrapperHeight = 700;
+
+        const widthScale = window.innerWidth / wrapperWidth;
+        const heightScale = window.innerHeight / wrapperHeight;
+        const scale = Math.min(widthScale, heightScale, 1);
+
+        wrapper.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    window.addEventListener('resize', scalePokerWrapper);
+    window.addEventListener('load', scalePokerWrapper);
+</script>
+
+<!-- Sends request to python -->
+
+<script>
+function sendAction(action) {
+  fetch("{% url 'submit_action' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCookie("csrftoken"),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ action: action })
+  })
+  .then(r => r.json())
+  .then(result => {
+    if (result.status === "ok") {
+      // instead of reload, just refresh the bits that changed:
+      refreshSeatMap();
+      refreshTurnStatus();
+      updateUILog();
+      updateGameState();   // ← new
+    } else {
+      console.error(result.message);
+    }
+  });
+}
+
+function updateGameState() {
+  fetch("{% url 'get_game_state' %}")
+    .then(r => r.json())
+    .then(data => {
+      // player cards
+      document.getElementById("card1").src = "{% static 'pages/poker_room/static/Cards/' %}" + data.player_hand[0] + ".png";
+      document.getElementById("card2").src = "{% static 'pages/poker_room/static/Cards/' %}" + data.player_hand[1] + ".png";
+
+      // community cards
+      data.community_cards.forEach((c, i) => {
+        document.getElementById("comm"+(i+1)).src =
+          "{% static 'pages/poker_room/static/Cards/' %}" + c + ".png";
+      });
+
+      // highlight turn button states
+      currentTurnPlayer = data.current_turn_player;
+      // you can reuse your refreshTurnStatus logic or update button opacity here
+    });
+}
+
+// on load, call it once
+window.addEventListener('load', () => {
+  updateGameState();
+});
+</script>
+
+
+<script>
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+</script>
+
+<script>
+const currentUser = "{{ request.user.username }}";
+
+function refreshSeatMap() {
+    fetch("{% url 'get_seat_map' %}")
+    .then(response => response.json())
+    .then(data => {
+        const map = data.seat_map;
+        const coins = data.coin_map;
+
+        // first, clear out any old back-of-card images
+        // wrapper.querySelectorAll('.dynamic-seat-card').forEach(el => el.remove());
+
+        for (let i = 1; i <= 9; i++) {
+            const spot = document.querySelector(`.spot${i}`);
+            if (!spot) continue;
+
+            // wipes out old player names so stuff isn't layered
+            spot.innerHTML = "";
+
+            if (map[i]) {
+                const player = map[i];
+                const chipCount = coins[player] || 0;
+                const youTag = player === currentUser ? " (You)" : "";
+
+                spot.innerHTML = `
+                    <img src="{% static 'pages/poker_room/plus.png' %}" style="width: 100%; height: 100%;">
+
+
+                    <div style="position: absolute; top: 60px; width: 100%; text-align: center; color: white; font-weight: bold; font-size: 14px;">
+                        ${player}${youTag}<br>${chipCount} chips
+                    </div>
+                `;
+                if (i !== 1){    
+                    const cardImg = document.createElement('img');
+                    cardImg.src = "{% static 'pages/poker_room/static/Cards/Back_of_Card.png' %}";
+                    cardImg.style.position = 'absolute';
+                    cardImg.style.top      = '-40px';  // 40px above spot’s top
+                    cardImg.style.left     = '5px';    // 5px from spot’s left edge
+                    cardImg.style.width    = '40px';
+                    cardImg.style.zIndex   = '5';
+                    spot.appendChild(cardImg);
+                }
+            }
+        }
+    });
+}
+
+// Call immediately once and then every 5 sec
+refreshSeatMap();
+setInterval(refreshSeatMap, 1000);
+</script>
+
+<script>
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+    e.returnValue = 'Are you sure you want to refresh or leave?';
+});
+</script>
+
+<script>
+window.addEventListener('beforeunload', function (e) {
+  // look up how this page was unloaded
+  const navEntries = performance.getEntriesByType("navigation");
+  const nav = navEntries[0];
+  // if it's a hard close or link-click (not a reload), fire leave_room
+  if (!nav || nav.type !== "reload") {
+    navigator.sendBeacon("{% url 'leave_room' %}");
+  }
+});
+</script>
+
+<script>
+function refreshTurnStatus() {
+    fetch("{% url 'turn_status' %}")
+    .then(response => response.json())
+    .then(data => {
+        const currentTurnPlayer = data.current_turn_player;
+        document.querySelectorAll('.spot img').forEach(img => {
+            img.classList.remove('gold-outline');
+            const username = img.nextElementSibling?.innerText?.split(' ')[0];
+            if (username === currentTurnPlayer) {
+                img.classList.add('gold-outline');
+            }
+        });
+    });
+}
+
+// Call immediately once and then every 5 sec
+refreshTurnStatus();
+setInterval(refreshTurnStatus, 1000);
+</script>
+
+
+<script>
+function updateUILog() {
+    fetch("{% url 'get_ui_log' %}")
+        .then(response => response.json())
+        .then(data => {
+            const logContainer = document.getElementById("ui-log-content");
+            logContainer.innerHTML = "";
+
+            data.log.forEach(entry => {
+                const line = document.createElement("div");
+                line.textContent = entry;
+                logContainer.appendChild(line);
+            });
+
+            // Auto-scroll to the latest entry
+            logContainer.parentElement.scrollTop = logContainer.parentElement.scrollHeight;
+        });
+}
+
+// Update immediately and every second
+updateUILog();
+setInterval(updateUILog, 1000);
+</script>
+
+
+</body>
+</html>
